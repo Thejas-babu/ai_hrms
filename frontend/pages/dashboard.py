@@ -3,13 +3,16 @@ import pandas as pd
 import plotly.express as px
 
 from backend.database.db import (
-    conn,
-    cursor
+    get_connection
 )
 
 def show_dashboard():
 
     st.header("📊 Dashboard")
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
 
     # Employee Count
 
@@ -70,42 +73,9 @@ def show_dashboard():
         fig = px.pie(
             df,
             names="Department",
-            values="Employees",
-            title="Department Distribution"
+            values="Employees"
         )
 
         st.plotly_chart(fig)
 
-    st.subheader("📌 Recent Attendance")
-
-    cursor.execute(
-        '''
-        SELECT employee_name, status
-        FROM attendance
-        ORDER BY id DESC
-        LIMIT 5
-        '''
-    )
-
-    records = cursor.fetchall()
-
-    if records:
-
-        attendance_df = pd.DataFrame(
-            records,
-            columns=[
-                "Employee",
-                "Status"
-            ]
-        )
-
-        st.dataframe(
-            attendance_df,
-            use_container_width=True
-        )
-
-    else:
-
-        st.info(
-            "No attendance records yet"
-        )
+    conn.close()
