@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import datetime
 
 from backend.database.db import (
     get_connection
@@ -23,6 +24,8 @@ def show_attendance():
 
         cursor = conn.cursor()
 
+        # Check Employee
+
         cursor.execute(
             '''
             SELECT * FROM employees
@@ -40,28 +43,58 @@ def show_attendance():
 
             employee_name = employee[2]
 
+            today = datetime.now().strftime(
+                "%Y-%m-%d"
+            )
+
+            # Check Existing Attendance
+
             cursor.execute(
                 '''
-                INSERT INTO attendance
-                (
-                    employee_id,
-                    employee_name,
-                    status
-                )
-                VALUES (?, ?, ?)
+                SELECT * FROM attendance
+                WHERE employee_id=?
+                AND attendance_date=?
                 ''',
                 (
                     employee_id,
-                    employee_name,
-                    "Present"
+                    today
                 )
             )
 
-            conn.commit()
+            existing = cursor.fetchone()
 
-            st.success(
-                f"Attendance Marked for {employee_name} ✅"
-            )
+            if existing:
+
+                st.warning(
+                    "Attendance already marked today ⚠️"
+                )
+
+            else:
+
+                cursor.execute(
+                    '''
+                    INSERT INTO attendance
+                    (
+                        employee_id,
+                        employee_name,
+                        status,
+                        attendance_date
+                    )
+                    VALUES (?, ?, ?, ?)
+                    ''',
+                    (
+                        employee_id,
+                        employee_name,
+                        "Present",
+                        today
+                    )
+                )
+
+                conn.commit()
+
+                st.success(
+                    f"Attendance Marked for {employee_name} ✅"
+                )
 
         else:
 
