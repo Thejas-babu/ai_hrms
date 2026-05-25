@@ -78,4 +78,47 @@ def show_dashboard():
 
         st.plotly_chart(fig)
 
+    # ✅ ADD THIS PART HERE
+
+    st.subheader("📌 Recent Attendance")
+
+    cursor.execute(
+        '''
+        SELECT employee_name,
+        attendance_date,
+        check_in,
+        check_out
+        FROM attendance
+        ORDER BY id DESC
+        LIMIT 10
+        '''
+    )
+
+    records = cursor.fetchall()
+
+    if records:
+
+        attendance_df = pd.DataFrame(
+            records,
+            columns=[
+                "Employee",
+                "Date",
+                "Check In",
+                "Check Out"
+            ]
+        )
+
+        st.dataframe(
+            attendance_df,
+            use_container_width=True
+        )
+
+    else:
+
+        st.info(
+            "No attendance records found"
+        )
+
+    # CLOSE CONNECTION
+
     conn.close()
