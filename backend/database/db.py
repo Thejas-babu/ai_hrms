@@ -7,15 +7,16 @@ conn = sqlite3.connect(
 
 cursor = conn.cursor()
 
-# Employee Table
+# Employees Table
 
 cursor.execute(
     '''
     CREATE TABLE IF NOT EXISTS employees (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT UNIQUE,
+        employee_id TEXT UNIQUE,
+        name TEXT,
         department TEXT,
-        private_key TEXT
+        pin TEXT
     )
     '''
 )
@@ -26,6 +27,7 @@ cursor.execute(
     '''
     CREATE TABLE IF NOT EXISTS attendance (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_id TEXT,
         employee_name TEXT,
         status TEXT
     )
