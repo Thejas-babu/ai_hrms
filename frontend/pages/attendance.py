@@ -1,8 +1,7 @@
 import streamlit as st
 
 from backend.database.db import (
-    conn,
-    cursor
+    get_connection
 )
 
 def show_attendance():
@@ -19,6 +18,10 @@ def show_attendance():
     )
 
     if st.button("Mark Attendance"):
+
+        conn = get_connection()
+
+        cursor = conn.cursor()
 
         cursor.execute(
             '''
@@ -65,3 +68,5 @@ def show_attendance():
             st.error(
                 "Invalid Employee ID or PIN ❌"
             )
+
+        conn.close()
