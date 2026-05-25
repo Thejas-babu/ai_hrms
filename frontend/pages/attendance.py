@@ -7,7 +7,7 @@ from backend.database.db import (
 
 def show_attendance():
 
-    st.header("📅 Attendance")
+    st.header("📅 Attendance System")
 
     employee_id = st.text_input(
         "Employee ID"
@@ -18,13 +18,21 @@ def show_attendance():
         type="password"
     )
 
-    if st.button("Mark Attendance"):
+    action = st.selectbox(
+        "Select Action",
+        [
+            "Check In",
+            "Check Out"
+        ]
+    )
+
+    if st.button("Submit"):
 
         conn = get_connection()
 
         cursor = conn.cursor()
 
-        # Check Employee
+        # Verify Employee
 
         cursor.execute(
             '''
@@ -47,7 +55,11 @@ def show_attendance():
                 "%Y-%m-%d"
             )
 
-            # Check Existing Attendance
+            current_time = datetime.now().strftime(
+                "%H:%M:%S"
+            )
+
+            # Check Existing Record
 
             cursor.execute(
                 '''
@@ -61,40 +73,86 @@ def show_attendance():
                 )
             )
 
-            existing = cursor.fetchone()
+            attendance = cursor.fetchone()
 
-            if existing:
+            # CHECK IN
 
-                st.warning(
-                    "Attendance already marked today ⚠️"
-                )
+            if action == "Check In":
 
-            else:
+                if attendance:
 
-                cursor.execute(
-                    '''
-                    INSERT INTO attendance
-                    (
-                        employee_id,
-                        employee_name,
-                        status,
-                        attendance_date
+                    st.warning(
+                        "Already checked in today ⚠️"
                     )
-                    VALUES (?, ?, ?, ?)
-                    ''',
-                    (
-                        employee_id,
-                        employee_name,
-                        "Present",
-                        today
+
+                else:
+
+                    cursor.execute(
+                        '''
+                        INSERT INTO attendance
+                        (
+                            employee_id,
+                            employee_name,
+                            attendance_date,
+                            check_in,
+                            check_out
+                        )
+                        VALUES (?, ?, ?, ?, ?)
+                        ''',
+                        (
+                            employee_id,
+                            employee_name,
+                            today,
+                            current_time,
+                            ""
+                        )
                     )
-                )
 
-                conn.commit()
+                    conn.commit()
 
-                st.success(
-                    f"Attendance Marked for {employee_name} ✅"
-                )
+                    st.success(
+                        f"Checked In at {current_time} ✅"
+                    )
+
+            # CHECK OUT
+
+            elif action == "Check Out":
+
+                if attendance:
+
+                    if attendance[5]:
+
+                        st.warning(
+                            "Already checked out ⚠️"
+                        )
+
+                    else:
+
+                        cursor.execute(
+                            '''
+                            UPDATE attendance
+                            SET check_out=?
+                            WHERE employee_id=?
+                            AND attendance_date=?
+                            ''',
+                            (
+                                current_time,
+                                employee_id,
+                                today
+                            )
+                        )
+
+                        conn.commit()
+
+                        st.success(
+                            f"Checked Out at {current_time} ✅"
+                        )
+
+                else:
+
+                    st.error(
+                        "Please Check In first ❌"
+                    )
 
         else:
 
