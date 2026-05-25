@@ -1,5 +1,20 @@
-from sqlalchemy import create_engine
+import sqlite3
 
-DATABASE_URL = "sqlite:///hrms.db"
+conn = sqlite3.connect(
+    "hrms.db",
+    check_same_thread=False
+)
 
-engine = create_engine(DATABASE_URL)
+cursor = conn.cursor()
+
+cursor.execute(
+    '''
+    CREATE TABLE IF NOT EXISTS employees (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        department TEXT
+    )
+    '''
+)
+
+conn.commit()
