@@ -1,14 +1,19 @@
 import streamlit as st
-import uuid
+import random
 
 from backend.database.db import (
     conn,
     cursor
 )
 
-def generate_private_key():
+def generate_employee_id():
 
-    return str(uuid.uuid4())[:8]
+    return f"EMP{random.randint(1000,9999)}"
+
+
+def generate_pin():
+
+    return str(random.randint(1000,9999))
 
 
 def show_employees():
@@ -25,31 +30,47 @@ def show_employees():
 
     if st.button("Add Employee"):
 
-        private_key = generate_private_key()
+        employee_id = generate_employee_id()
+
+        pin = generate_pin()
 
         try:
 
             cursor.execute(
                 '''
                 INSERT INTO employees
-                (name, department, private_key)
-                VALUES (?, ?, ?)
-                ''',
                 (
+                    employee_id,
                     name,
                     department,
-                    private_key
+                    pin
+                )
+                VALUES (?, ?, ?, ?)
+                ''',
+                (
+                    employee_id,
+                    name,
+                    department,
+                    pin
                 )
             )
 
             conn.commit()
 
             st.success(
-                f"Employee Added Successfully"
+                "Employee Added Successfully ✅"
             )
 
-            st.info(
-                f"Private Key: {private_key}"
+            st.warning(
+                "Save these credentials securely."
+            )
+
+            st.code(
+                f'''
+Employee ID: {employee_id}
+
+PIN: {pin}
+                '''
             )
 
         except:
