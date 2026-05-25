@@ -1,0 +1,13 @@
+streamlit
+flask
+pandas
+numpy
+sqlalchemy
+openai
+python-dotenv
+sentence-transformers
+scikit-learn
+plotly
+bcrypt
+pyjwt
+requests
