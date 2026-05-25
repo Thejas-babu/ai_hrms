@@ -1,37 +1,51 @@
 import sqlite3
 
-conn = sqlite3.connect(
-    "hrms.db",
-    check_same_thread=False
-)
+def get_connection():
 
-cursor = conn.cursor()
-
-# Employees Table
-
-cursor.execute(
-    '''
-    CREATE TABLE IF NOT EXISTS employees (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        employee_id TEXT UNIQUE,
-        name TEXT,
-        department TEXT,
-        pin TEXT
+    conn = sqlite3.connect(
+        "hrms.db",
+        check_same_thread=False
     )
-    '''
-)
 
-# Attendance Table
+    return conn
 
-cursor.execute(
-    '''
-    CREATE TABLE IF NOT EXISTS attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        employee_id TEXT,
-        employee_name TEXT,
-        status TEXT
+
+def init_db():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    # Employees Table
+
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS employees (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id TEXT UNIQUE,
+            name TEXT,
+            department TEXT,
+            pin TEXT
+        )
+        '''
     )
-    '''
-)
 
-conn.commit()
+    # Attendance Table
+
+    cursor.execute(
+        '''
+        CREATE TABLE IF NOT EXISTS attendance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id TEXT,
+            employee_name TEXT,
+            status TEXT
+        )
+        '''
+    )
+
+    conn.commit()
+
+    conn.close()
+
+
+init_db()
