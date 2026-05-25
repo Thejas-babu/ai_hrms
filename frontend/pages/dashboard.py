@@ -11,7 +11,7 @@ def show_dashboard():
 
     st.header("📊 Dashboard")
 
-    # REAL EMPLOYEE COUNT
+    # Employee Count
 
     cursor.execute(
         "SELECT COUNT(*) FROM employees"
@@ -19,7 +19,7 @@ def show_dashboard():
 
     employee_count = cursor.fetchone()[0]
 
-    # REAL ATTENDANCE COUNT
+    # Attendance Count
 
     cursor.execute(
         "SELECT COUNT(*) FROM attendance"
@@ -30,7 +30,7 @@ def show_dashboard():
     col1, col2, col3 = st.columns(3)
 
     col1.metric(
-        "Employees",
+        "Total Employees",
         employee_count
     )
 
@@ -48,7 +48,8 @@ def show_dashboard():
 
     cursor.execute(
         '''
-        SELECT department, COUNT(*)
+        SELECT department,
+        COUNT(*)
         FROM employees
         GROUP BY department
         '''
@@ -66,16 +67,45 @@ def show_dashboard():
             ]
         )
 
-        fig = px.bar(
+        fig = px.pie(
             df,
-            x="Department",
-            y="Employees"
+            names="Department",
+            values="Employees",
+            title="Department Distribution"
         )
 
         st.plotly_chart(fig)
 
+    st.subheader("📌 Recent Attendance")
+
+    cursor.execute(
+        '''
+        SELECT employee_name, status
+        FROM attendance
+        ORDER BY id DESC
+        LIMIT 5
+        '''
+    )
+
+    records = cursor.fetchall()
+
+    if records:
+
+        attendance_df = pd.DataFrame(
+            records,
+            columns=[
+                "Employee",
+                "Status"
+            ]
+        )
+
+        st.dataframe(
+            attendance_df,
+            use_container_width=True
+        )
+
     else:
 
-        st.warning(
-            "No employee data available"
+        st.info(
+            "No attendance records yet"
         )
