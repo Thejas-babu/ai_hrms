@@ -1,5 +1,15 @@
 import streamlit as st
-from backend.database.db import conn, cursor
+import uuid
+
+from backend.database.db import (
+    conn,
+    cursor
+)
+
+def generate_private_key():
+
+    return str(uuid.uuid4())[:8]
+
 
 def show_employees():
 
@@ -15,31 +25,35 @@ def show_employees():
 
     if st.button("Add Employee"):
 
-        cursor.execute(
-            '''
-            INSERT INTO employees
-            (name, department)
-            VALUES (?, ?)
-            ''',
-            (name, department)
-        )
+        private_key = generate_private_key()
 
-        conn.commit()
+        try:
 
-        st.success(
-            f"{name} added successfully"
-        )
+            cursor.execute(
+                '''
+                INSERT INTO employees
+                (name, department, private_key)
+                VALUES (?, ?, ?)
+                ''',
+                (
+                    name,
+                    department,
+                    private_key
+                )
+            )
 
-    st.subheader("Employee List")
+            conn.commit()
 
-    cursor.execute(
-        "SELECT * FROM employees"
-    )
+            st.success(
+                f"Employee Added Successfully"
+            )
 
-    employees = cursor.fetchall()
+            st.info(
+                f"Private Key: {private_key}"
+            )
 
-    for emp in employees:
+        except:
 
-        st.write(
-            f"ID: {emp[0]} | Name: {emp[1]} | Department: {emp[2]}"
-        )
+            st.error(
+                "Employee already exists"
+            )
