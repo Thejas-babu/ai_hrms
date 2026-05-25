@@ -2,8 +2,7 @@ import streamlit as st
 import random
 
 from backend.database.db import (
-    conn,
-    cursor
+    get_connection
 )
 
 def generate_employee_id():
@@ -34,6 +33,10 @@ def show_employees():
 
         pin = generate_pin()
 
+        conn = get_connection()
+
+        cursor = conn.cursor()
+
         try:
 
             cursor.execute(
@@ -61,10 +64,6 @@ def show_employees():
                 "Employee Added Successfully ✅"
             )
 
-            st.warning(
-                "Save these credentials securely."
-            )
-
             st.code(
                 f'''
 Employee ID: {employee_id}
@@ -73,8 +72,10 @@ PIN: {pin}
                 '''
             )
 
-        except:
+        except Exception as e:
 
-            st.error(
-                "Employee already exists"
-            )
+            st.error(str(e))
+
+        finally:
+
+            conn.close()
