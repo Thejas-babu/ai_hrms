@@ -9,12 +9,12 @@ def show_attendance():
 
     st.header("📅 Attendance")
 
-    employee_name = st.text_input(
-        "Employee Name"
+    employee_id = st.text_input(
+        "Employee ID"
     )
 
-    private_key = st.text_input(
-        "Private Key",
+    pin = st.text_input(
+        "PIN",
         type="password"
     )
 
@@ -23,11 +23,11 @@ def show_attendance():
         cursor.execute(
             '''
             SELECT * FROM employees
-            WHERE name=? AND private_key=?
+            WHERE employee_id=? AND pin=?
             ''',
             (
-                employee_name,
-                private_key
+                employee_id,
+                pin
             )
         )
 
@@ -35,13 +35,20 @@ def show_attendance():
 
         if employee:
 
+            employee_name = employee[2]
+
             cursor.execute(
                 '''
                 INSERT INTO attendance
-                (employee_name, status)
-                VALUES (?, ?)
+                (
+                    employee_id,
+                    employee_name,
+                    status
+                )
+                VALUES (?, ?, ?)
                 ''',
                 (
+                    employee_id,
                     employee_name,
                     "Present"
                 )
@@ -50,11 +57,11 @@ def show_attendance():
             conn.commit()
 
             st.success(
-                "Attendance Marked Successfully ✅"
+                f"Attendance Marked for {employee_name} ✅"
             )
 
         else:
 
             st.error(
-                "Invalid Name or Private Key ❌"
+                "Invalid Employee ID or PIN ❌"
             )
