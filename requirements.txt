@@ -12,3 +12,4 @@ bcrypt
 pyjwt
 requests
 reportlab
+pdfplumber
