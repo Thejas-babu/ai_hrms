@@ -33,15 +33,16 @@ def init_db():
     # Attendance Table
 
     cursor.execute(
-        '''
-        CREATE TABLE IF NOT EXISTS attendance (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            employee_id TEXT,
-            employee_name TEXT,
-            status TEXT
-        )
-        '''
+    '''
+    CREATE TABLE IF NOT EXISTS attendance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_id TEXT,
+        employee_name TEXT,
+        status TEXT,
+        attendance_date TEXT
     )
+    '''
+)
 
     conn.commit()
 
