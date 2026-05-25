@@ -38,8 +38,9 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         employee_id TEXT,
         employee_name TEXT,
-        status TEXT,
-        attendance_date TEXT
+        attendance_date TEXT,
+        check_in TEXT,
+        check_out TEXT
     )
     '''
 )
