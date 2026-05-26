@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=os.getenv("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")
 )
 
 def ask_ai(question):
